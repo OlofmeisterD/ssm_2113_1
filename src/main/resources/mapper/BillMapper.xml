@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bdqn.dao.billDao">
+    <!--分页查询订单信息，模糊查询-->
+    <select id="getBillList" resultMap="billList">
+    select b.*,p.proName as p_proName from smbms_bill b,smbms_provider p
+    where b.providerId=p.id
+        <if test="productName!=null and productName!=''">
+           and b.productName like concat('%',#{productName},'%')
+        </if>
+        <if test="queryProviderId!=null and queryProviderId!=''">
+            and b.providerId=#{queryProviderId}
+        </if>
+
+        <if test="queryIsPayment!=null and queryIsPayment!=''">
+            and b.isPayment=#{queryIsPayment}
+        </if>
+        order by creationDate DESC
+        limit #{pageIndex},#{pageSize}
+    </select>
+
+    <!--统计总记录数-->
+    <select id="getBillCount" resultType="int">
+        select count(*) from smbms_bill b,smbms_provider p  where b.providerId=p.id
+        <if test="productName!=null and productName!=''">
+            and b.productName like concat('%',#{productName},'%')
+        </if>
+        <if test="queryProviderId!=null and queryProviderId!=''">
+            and b.providerId=#{queryProviderId}
+        </if>
+
+        <if test="queryIsPayment!=null and queryIsPayment!=''">
+           and b.isPayment=#{queryIsPayment}
+        </if>
+    </select>
+    <select id="getBillById" resultMap="billList">
+        select b.*,p.proName as p_proName from smbms_bill b,smbms_provider p
+    where b.providerId=p.id and b.id=#{id}
+    </select>
+    <resultMap id="billList" type="Bill">
+        <id property="id" column="id"></id>
+        <result property="billCode" column="billCode"></result>
+        <result property="productName" column="productName"></result>
+        <result property="productDesc" column="productDesc"></result>
+        <result property="productUtil" column="productUtil"></result>
+        <result property="productCount" column="productCount"></result>
+        <result property="totalPrice" column="totalPrice"></result>
+        <result property="isPayment" column="isPayment"></result>
+        <result property="createdBy" column="createdBy"></result>
+        <result property="creationDate" column="creationDate"></result>
+        <result property="modifyBy" column="modifyBy"></result>
+        <result property="modifyDate" column="modifyDate"></result>
+        <result property="providerId" column="providerId"></result>
+        <result property="providerName" column="p_proName"></result>
+    </resultMap>
+
+    <select id="selectBillById" resultType="Bill">
+        select * from smbms_bill where id=#{id}
+    </select>
+    <update id="updateBill" parameterType="Bill">
+        update smbms_bill
+        <trim prefix="set" suffixOverrides="," suffix="where id=#{id}">
+        <if test="billCode!=null and billCode!=''">
+            billCode=#{billCode},
+        </if>
+            <if test="productName!=null and productName!=''">
+                         productName=#{productName},
+            </if>
+
+            <if test="productUnit!=null and productUnit!=''">
+                productUnit=#{productUnit},
+            </if>
+            <if test="productCount!=null and productCount!=''">
+                productCount=#{productCount},
+            </if>
+            <if test="totalPrice!=null and totalPrice!=''">
+                totalPrice=#{totalPrice},
+            </if>
+            <if test="providerId!=null and providerId!=''">
+                providerId=#{providerId},
+            </if>
+            <if test="isPayment!=null and isPayment!=''">
+                isPayment=#{isPayment},
+            </if>
+            <if test="modifyBy!=null and modifyBy!=''">
+                modifyBy=#{modifyBy},
+            </if>
+            <if test="modifyDate!=null">
+                modifyDate=#{modifyDate},
+            </if>
+        </trim>
+    </update>
+    <insert id="addBill" parameterType="Bill">
+   insert into smbms_bill
+   (billCode,productName,productUnit,productCount,totalPrice,providerId,isPayment,createdBy,creationDate)
+   values (#{billCode},#{productName},#{productUnit},#{productCount},#{totalPrice},#{providerId},#{isPayment},#{createdBy},#{creationDate})
+    </insert>
+    <delete id="deleteBill" parameterType="int">
+        delete from smbms_bill where id=#{id}
+    </delete>
+</mapper>

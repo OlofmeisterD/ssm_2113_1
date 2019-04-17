@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bdqn.dao.providerDao">
+    <select id="selectAllProvider" resultType="Provider">
+        select * from smbms_provider
+    </select>
+    <select id="selectAllProviderLimit" resultType="Provider">
+        select * from smbms_provider where
+        <if test="proCode!=null ">
+            proCode like concat('%',#{proCode},'%')
+        </if>
+        <if test="proName!=null ">
+           and proName like concat('%',#{proName},'%')
+        </if>
+        limit #{PageIndex},#{PageSize}
+    </select>
+    <select id="getProviderCount" resultType="int">
+        select count(1) from smbms_provider where
+        <if test="proCode!=null ">
+            proCode  like concat('%',#{proCode},'%')
+        </if>
+        <if test="proName!=null ">
+            and proName  like concat('%',#{proName},'%')
+        </if>
+    </select>
+
+</mapper>
